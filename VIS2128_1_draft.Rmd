@@ -1,0 +1,137 @@
+---
+title: "VIS 2128 - Five Maps"
+author: "SP"
+date: "9/3/2021"
+output: html_document
+---
+```{r load packages, message=FALSE}
+library(tidyverse)
+library(sf)
+library(spData)
+library(ggthemes)
+library(ggspatial)
+```
+
+```{r reading in data}
+communities <- st_read("https://data.cityofchicago.org/api/geospatial/cauq-8yn6?method=export&format=KML")
+EZ <- st_read("https://data.cityofchicago.org/api/geospatial/64xf-pyvh?method=export&format=KML")
+bus_stops <- st_read("CTA_BusStops.kml")
+bus_routes <- st_read("CTA_Routes.kml")
+```
+
+```{r community boundaries plot}
+communities_plot <- ggplot(communities) +
+  geom_sf()
+
+communities_plot
+```
+
+```{r enterprise zones plot}
+EZ_plot <- ggplot(EZ) +
+  geom_sf()
+
+EZ_plot
+```
+
+```{r CTA bus stops plot}
+bus_stops_plot <- ggplot(bus_stops) +
+  geom_sf()
+
+bus_stops_plot
+```
+
+```{r CTA bus routes plot}
+bus_routes_plot <- ggplot(bus_routes) +
+  geom_sf()
+
+bus_routes_plot
+```
+
+```{r 1. black and white map}
+map_1_bw <- ggplot() +
+  annotation_map_tile(zoomin = 0, progress = "none", type = "stamenbw") +
+  geom_sf(data = communities, size = 0.5, alpha = 0.3, aes(fill = "Community Boundaries")) +
+  geom_sf(data = EZ, color = NA, aes(fill = "Enterprise Zones")) +
+  geom_sf(data = bus_routes, aes(color = "CTA Bus Routes")) +
+  geom_sf(data = bus_stops, shape = 20, size = 0.001, aes(color = "CTA Bus Stops")) +
+  scale_fill_manual(values = c("black", "gray27"), name = "") +
+  scale_color_manual(values = c("black", "black"), name = "") +
+  theme_void() +
+  labs(caption = "Map tiles by Stamen Design. Data by OpenStreetMap")
+
+map_1_bw
+```
+
+```{r 2. black and white map with some color}
+map_2 <- ggplot() +
+  annotation_map_tile(zoomin = 0, progress = "none", type = "stamenbw") +
+  geom_sf(data = communities, color = "pink", size = 0.5, alpha = 0.3, aes(fill = "Community Boundaries")) +
+  geom_sf(data = EZ, color = "yellow", alpha = 0.3, aes(fill = "Enterprise Zones")) +
+  geom_sf(data = bus_routes, aes(color = "CTA Bus Routes")) +
+  geom_sf(data = bus_stops, shape = 3, size = 0.01, aes(color = "CTA Bus Stops")) +
+  scale_fill_manual(values = c("pink", "yellow"), name = "") +
+  scale_color_manual(values = c("red", "darkred"), name = "") +
+  theme_void() +
+  labs(caption = "Map tiles by Stamen Design. Data by OpenStreetMap")
+
+map_2
+```
+```{r 3. cartolight}
+map_3 <- ggplot() +
+  annotation_map_tile(zoomin = 0, progress = "none", type = "cartolight") +
+  geom_sf(data = communities, color = "pink", alpha = 0.3, aes(fill = "Community Boundaries")) +
+  geom_sf(data = EZ, color = NA, alpha = 0.3, aes(fill = "Enterprise Zones")) +
+  geom_sf(data = bus_routes, aes(color = "CTA Bus Routes")) +
+  geom_sf(data = bus_stops, shape = 3, size = 0.01, aes(color = "CTA Bus Stops")) +
+  scale_fill_manual(values = c("pink", "yellow"), name = "") +
+  scale_color_manual(values = c("red", "darkred"), name = "") +
+  theme_void() +
+  labs(caption = "Map tiles and data by OpenStreetMap")
+
+map_3
+```
+
+```{r 4. no boundaries}
+map_4 <- ggplot() +
+  annotation_map_tile(zoomin = 0, progress = "none", type = "stamenbw") +
+  geom_sf(data = communities, color = NA, alpha = 0.3, aes(fill = "Community Boundaries")) +
+  geom_sf(data = EZ, color = NA, alpha = 0.3, aes(fill = "Enterprise Zones")) +
+  geom_sf(data = bus_routes, aes(color = "CTA Bus Routes")) +
+  geom_sf(data = bus_stops, shape = 20, size = 0.01, aes(color = "CTA Bus Stops")) +
+  scale_fill_manual(values = c("firebrick", "orange"), name = "") +
+  scale_color_manual(values = c("dodgerblue", "dodgerblue4"), name = "") +
+  theme_void() +
+  labs(caption = "Map tiles by Stamen Design. Data by OpenStreetMap")
+  
+map_4
+```
+```{r 5. cartodark}
+map_5 <- ggplot() +
+  annotation_map_tile(zoomin = 0, progress = "none", type = "cartodark") +
+  geom_sf(data = communities, color = "lightsteelblue2", size = 0.3, alpha = 0.5, aes(fill = "Community Boundaries")) +
+  geom_sf(data = EZ, color = "lightpink3", alpha = 0.5, aes(fill = "Enterprise Zones")) +
+  geom_sf(data = bus_routes, aes(color = "CTA Bus Routes")) +
+  geom_sf(data = bus_stops, shape = 1, size = 0.01, aes(color = "CTA Bus Stops")) +
+  scale_fill_manual(values = c("lightsteelblue4", "lightpink3"), name = "") +
+  scale_color_manual(values = c("navy", "yellow"), name = "") +
+  theme_void() +
+  labs(caption = "Map tiles by Stamen Design. Data by OpenStreetMap")
+
+map_5
+```
+
+```{r 6. bad map with huge points}
+map_6 <- ggplot() +
+  annotation_map_tile(zoomin = 0, progress = "none", type = "hikebike") +
+  geom_sf(data = communities, color = NA, alpha = 0.5, aes(fill = "Community Boundaries")) +
+  geom_sf(data = EZ, color = NA, alpha = 0.5, aes(fill = "Enterprise Zones")) +
+  geom_sf(data = bus_routes, aes(color = "CTA Bus Routes")) +
+  geom_sf(data = bus_stops, shape = 17, size = 2, aes(color = "CTA Bus Stops")) +
+  scale_fill_manual(values = c("firebrick", "orange"), name = "") +
+  scale_color_manual(values = c("dodgerblue", "dodgerblue4"), name = "") +
+  theme_void() +
+  labs(caption = "Map tiles and data by OpenStreetMap")
+
+map_6
+```
+
